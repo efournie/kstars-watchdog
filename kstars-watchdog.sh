@@ -15,13 +15,11 @@ echo $'\n\n\n\n\n' >> $LOGFILE
 date >> $LOGFILE
 
 # Setup X
-
 export DISPLAY=:0
 XAUTHORITY=`ls /tmp/xauth_* -tr | tail -n1`
 xhost +local: >> $LOGFILE 2>&1
 
 # Main loop
-
 while true
 do
 	while true

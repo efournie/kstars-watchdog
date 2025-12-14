@@ -8,5 +8,11 @@ This is a small batch script that will:
 - Finally, if KStars crashes or is closed, the script will restart it.
 
 It is a bash script but can probably very easily converted to zsh or sh. 
+
 For now, it uses X and not Wayland. 
+
 By default, no log file is written but changing the value of LOGFILE allows to save the outputs to a file.
+
+The script can be started if KStars is already running.
+
+Further actions (for example unparking the dome) can easily be added with qdbus. [The KStars API is well described here.](https://api.kde.org/legacy/kstars/html/index.html)
