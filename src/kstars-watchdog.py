@@ -24,12 +24,12 @@ def attempt_bus_connect(bus, service_name, path, max_retries=10, error_callback=
             time.sleep(1)
             cnt += 1
             if cnt <= max_retries:
-                print(f'Loading {service_name} {path} failed, retrying ((attempt #{cnt} of {max_retries})...')
+                print(f'Loading {service_name} {path} failed, retrying (attempt #{cnt} of {max_retries})...')
                 if error_callback is not None:
                     error_callback()
                 continue
             else:
-                print('Could not reload scheduler job after {max_retries} attempts')
+                print(f'Could not reload scheduler job after {max_retries} attempts')
                 return None
             break
         break
