@@ -19,7 +19,6 @@ def attempt_bus_connect(bus, service_name, path, max_retries=10, error_callback=
     cnt = 0
     while True:
         try:
-            print('trying')
             result = bus.get(service_name, path)
         except:
             time.sleep(1)
