@@ -1,4 +1,5 @@
 import argparse
+from datetime import datetime
 import os
 from pathlib import Path
 from pydbus import SessionBus
@@ -10,9 +11,12 @@ import time
 # replace all time.sleep() calls with status checks
 
 # Helper functions
+def log(string):
+    print(f'{datetime.now()}: {string}')
+
 def start_kstars():
-    print('Starting KStars...')
-    proc = subprocess.Popen([args.kstars_executable], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    log('Starting KStars...')
+    proc = subprocess.Popen([args.kstars_executable], stdout=subprocess.PIPE, stderr=subprocess.PIPE, start_new_session=True)
     time.sleep(8)
 
 def attempt_bus_connect(bus, service_name, path, max_retries=10, error_callback=None):
@@ -24,16 +28,16 @@ def attempt_bus_connect(bus, service_name, path, max_retries=10, error_callback=
             time.sleep(1)
             cnt += 1
             if cnt <= max_retries:
-                print(f'Loading {service_name} {path} failed, retrying (attempt #{cnt} of {max_retries})...')
+                log(f'Loading {service_name} {path} failed, retrying (attempt #{cnt} of {max_retries})...')
                 if error_callback is not None:
                     error_callback()
                 continue
             else:
-                print(f'Could not reload scheduler job after {max_retries} attempts')
+                log(f'Could not reload scheduler job after {max_retries} attempts')
                 return None
             break
         break
-    print(f'{service_name} {path} connected successfully.')
+    log(f'{service_name} {path} connected successfully.')
     return result
 
 home = Path.home()
@@ -54,9 +58,9 @@ while True:
     # Check if KStars is running, try to start it otherwise
     ekos = attempt_bus_connect(bus, 'org.kde.kstars', '/KStars/Ekos', error_callback=start_kstars)
     if ekos == None:
-        print(f'KStars could not be started, giving up...')
+        log(f'KStars could not be started, giving up...')
         exit(-1)
-    print('KStars is running.')
+    log('KStars is running.')
 
     # Show main Ekos window
     ekos.start()
@@ -65,7 +69,7 @@ while True:
 
     # INDI devices should be up and running by now
     if os.path.exists(args.sched_job):
-        print('Scheduler job file present, unparking telescope')
+        log('Scheduler job file present, unparking telescope')
         # Unpark mount
         mount = attempt_bus_connect(bus, 'org.kde.kstars','/KStars/Ekos/Mount')
         if mount is not None:
@@ -75,7 +79,7 @@ while True:
                 time.sleep(20)
             mount.unpark()
         else:
-            print('Could not unpark mount')
+            log('Could not unpark mount')
 
         # (Re-)start scheduler jobs : load and start scheduler file
         scheduler = attempt_bus_connect(bus, 'org.kde.kstars','/KStars/Ekos/Scheduler')
@@ -83,15 +87,15 @@ while True:
             scheduler.loadScheduler(args.sched_job)
             scheduler.start()
         else:
-            print('Could not reload scheduler job')
+            log('Could not reload scheduler job')
 
     # Watchdog loop, restart everything if Kstars crashes or is closed
-    print('Everything is up and running, initiating watchdog.')
+    log('Everything is up and running, initiating watchdog.')
     while True:
         try:
             ekos = bus.get('org.kde.kstars','/KStars/Ekos')
         except:
-            print('Kstars has been closed or crashed, restarting in 5 seconds...')
+            log('Kstars has been closed or crashed, restarting in 5 seconds...')
             time.sleep(5)
             break
         time.sleep(1)
