@@ -15,9 +15,9 @@ or
 
 `python3 kstars-watchdog.py`
 
-Further actions (for example unparking the dome) can easily be added with qdbus. [The KStars API is well described here.](https://api.kde.org/legacy/kstars/html/index.html)
+Further actions (for example unparking the dome) can easily be added with DBus. [The KStars API is well described here.](https://api.kde.org/legacy/kstars/html/index.html)
 
-Thanks to https://openastronomy.substack.com/p/automating-kstars-and-ekos-pt-2 for the python DBUS scripting examples.
+Thanks to https://openastronomy.substack.com/p/automating-kstars-and-ekos-pt-2 for the python DBus scripting examples.
 
 The kstars-watchdog-ssh.sh initiates X settings in case only ssh remote access is possible. Untested with Wayland yet.
 
@@ -25,3 +25,5 @@ The kstars-watchdog-ssh.sh initiates X settings in case only ssh remote access i
 
 - Python3
 - pydbus, installed for example with `pacman -S python-pydbus` or `apt install python3-pydbus`
+
+I tested the script on a Raspberry Pi 5 running [astroarch](https://github.com/devDucks/astroarch). Some timeouts (`time.sleep(...)`) may be dependent on the platform hardware. A Pi 4 or another mount may need increased delays.
